@@ -3,6 +3,5 @@ This repository contains code and documentation from research on Human-AI Intera
 
 Key Features
 - Eye-tracking Data Processing: Transform raw Tobii data (120 Hz) into VTNet-compatible formats
-Cross-validation
-- Frameworks: Specialized CV approaches for different classification scenarios
+- Cross-validation Frameworks: Specialized CV approaches for different classification scenarios
 - Documentation: Documents what files to look for in the lab server, how to use VTNet, HPCs, and more
