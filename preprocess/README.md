@@ -7,44 +7,62 @@ This pipeline prepares raw Tobii eye-tracking data for VTNet, a model designed t
 - **Data Augmentation**: Cyclically splits the data, generates scanpaths, and augments the dataset.
 - **Training Setup**: Organizes the preprocessed data into cross-validation splits for training.
 
-## Preprocessing Steps
+##  Preprocessing Steps
 
-### 1. Task Separation
-**File**: `task_separation.py`
+### 1. Task Separation  
+**Script**: `task_separation.py`  
+**Function**: `task_separation(raw_data_folder, output_folder)`
 
-This step handles the separation of raw data into individual tasks based on the data's "Task" column. Each task's data is isolated and prepared for further analysis.
+Separates raw Tobii data into individual cognitive tasks using `.seg` + `.tsv` files.
 
-- **Function**: `task_separation()`
-  - **Input**: Raw Tobii eye-tracking data
-  - **Output**: Separated task files
+- Matches segment timestamps to raw eye-tracking logs
+- Saves individual task `.pkl` files named like `ctrl_1_27.pkl`
 
-### 2. Validity Analysis
-**File**: `validity_analysis.py`
+```bash
+python task_separation.py 
+```
 
-In this step, we analyze the validity of the data to ensure that it meets the necessary quality standards. This step helps identify problematic data points and ensures only valid samples are used in model training.
+---
 
-- **Function**: `validity_analysis()`
-  - **Input**: Separated task data
-  - **Output**: Validity statistics and filtered data
+### 2. Validity Analysis  
+**Script**: `validity_analysis.py`  
+**Function**: `validity_analysis(input_folder, output_folder, min_valid_ratio=0.75)`
 
-### 3. Data Augmentation
-**File**: `augment_data.py`
+Filters data to keep only sequences with at least 75% valid gaze points.
 
-Data augmentation includes cyclic splitting and the generation of scanpath images. The goal is to increase the dataset's diversity by creating multiple versions of the data, including visual scanpaths and temporal sequences.
+```bash
+python validity_analysis.py
+```
 
-- **Functions**:
-  - `cyclic_split()`: Splits the data into multiple groups for cross-validation.
-  - `create_scanpath()`: Generates scanpath visualizations from gaze data.
-  - `augment_data()`: Applies cyclic splitting and scanpath generation to the data.
+---
 
-  - **Input**: Validated task data
-  - **Output**: Augmented data files (split data, scanpath images)
+### 3. Data Augmentation  
+**Script**: `augment_data.py`  
+**Functions**: `cyclic_split()`, `create_scanpath()`, `augment_data()`
 
-### 4. Training Setup
-**File**: `training_setup.py`
+Creates augmented sequences and scanpath images.
 
-This step organizes the data into the required structure for training VTNet. It prepares the data for cross-validation by splitting the dataset and creating directories for each task and difficulty level.
+- Splits each sequence into 4 chunks (cyclic split)
+- Saves `.pkl` and `.png` files per chunk
 
-- **Function**: `create_cv_splits()`
-  - **Input**: Augmented data
-  - **Output**: Cross-validation splits for training
+```bash
+python augment_data.py 
+```
+
+---
+
+### 4. Training Setup  
+**Script**: `training_setup.py`  
+**Function**: `create_cv_splits(augmented_dir, n_splits, output_dir)`
+
+Creates grouped K-Fold splits based on user/task IDs.
+
+```bash
+python training_setup.py 
+```
+
+##  Expected Outputs
+
+- `augmented/*.pkl` and `*.png` – split time-series + scanpaths
+- `cv_splits/*.pkl` – train/val splits per fold
+- `trained/model_<timestamp>.pt` – trained PyTorch models
