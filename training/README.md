@@ -19,7 +19,7 @@ To feed into the model, each sequence is truncated (or cyclically split) to a fi
 Train/Validation split
 We randomly hold out ~20% of your subjects for validation, keeping 80% for training.
 
-##2. Model Instantiation
+## 2. Model Instantiation
 We build a two‑branch VTNet:
 
 Temporal branch: a small GRU that ingests the raw time series.
